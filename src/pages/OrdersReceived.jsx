@@ -11,6 +11,7 @@ import {
   useDeleteOrderReceived,
   useCreateFulfillmentLink,
   useOrdersPlaced,
+  useFulfillmentLinks,
 } from "@/hooks/useOrders";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
@@ -73,10 +74,12 @@ export default function OrdersReceived() {
   const deleteMutation = useDeleteOrderReceived();
   const createLinkMutation = useCreateFulfillmentLink();
   const { data: placedOrders } = useOrdersPlaced();
+  const { data: fulfillmentLinks } = useFulfillmentLinks();
   const [open, setOpen] = useState(false);
   const [allocateOpen, setAllocateOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [noteView, setNoteView] = useState({ open: false, content: "" });
+  const [historyView, setHistoryView] = useState({ open: false, order: null });
 
   const form = useForm({
     resolver: zodResolver(orderReceivedSchema),
@@ -353,6 +356,13 @@ export default function OrdersReceived() {
                       </Button>
                       <Button
                         size="sm"
+                        variant="secondary"
+                        onClick={() => setHistoryView({ open: true, order })}
+                      >
+                        History
+                      </Button>
+                      <Button
+                        size="sm"
                         variant="destructive"
                         disabled={deleteMutation.isPending}
                         onClick={() =>
@@ -448,6 +458,92 @@ export default function OrdersReceived() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={historyView.open}
+        onOpenChange={(open) =>
+          setHistoryView((prev) => ({
+            ...prev,
+            open,
+            order: open ? prev.order : null,
+          }))
+        }
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              History —{" "}
+              {historyView.order
+                ? `${historyView.order.item_name} (${historyView.order.customer_name})`
+                : "Order"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {historyView.order ? (
+              <>
+                <div className="text-sm text-muted-foreground">
+                  Ordered: {historyView.order.ordered_quantity}{" "}
+                  {historyView.order.unit} • Dispatched:{" "}
+                  {historyView.order.dispatched_quantity ?? "—"} • Status:{" "}
+                  {historyView.order.status ?? "confirmed"}
+                </div>
+                <div className="max-h-80 overflow-auto border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Supplier</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {fulfillmentLinks
+                        ?.filter(
+                          (link) =>
+                            link.order_received_id === historyView.order.id
+                        )
+                        .map((link) => (
+                          <TableRow key={link.id}>
+                            <TableCell>
+                              {link.orders_placed?.party_name ?? "—"}
+                            </TableCell>
+                            <TableCell>
+                              {link.orders_placed?.item_name ?? "—"}
+                            </TableCell>
+                            <TableCell>
+                              {link.quantity_fulfilled ?? "—"}
+                            </TableCell>
+                            <TableCell>
+                              {link.created_at
+                                ? new Date(link.created_at).toLocaleDateString()
+                                : "—"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                  {fulfillmentLinks?.filter(
+                    (link) => link.order_received_id === historyView.order?.id
+                  ).length === 0 && (
+                    <div className="p-3 text-sm text-muted-foreground">
+                      No allocations yet.
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setHistoryView({ open: false, order: null })}
+            >
+              Close
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
