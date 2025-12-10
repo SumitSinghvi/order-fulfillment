@@ -119,12 +119,13 @@ export default function OrdersPlaced() {
 
   return (
     <div className="space-y-6">
+
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
               <CardTitle>Orders Placed</CardTitle>
-              <CardDescription>Track orders you have placed.</CardDescription>
+              <CardDescription>Data from Supabase `orders_placed`.</CardDescription>
             </div>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
@@ -274,16 +275,6 @@ export default function OrdersPlaced() {
             </Dialog>
           </div>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Use the “Add supplier order” button to capture new purchases.
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Orders List</CardTitle>
-          <CardDescription>Data from Supabase `orders_placed`.</CardDescription>
-        </CardHeader>
         <CardContent>
           {isLoading ? (
             <p>Loading orders...</p>
@@ -295,6 +286,7 @@ export default function OrdersPlaced() {
                 <TableRow>
                   <TableHead>Party</TableHead>
                   <TableHead>Item</TableHead>
+                    <TableHead>Date</TableHead>
                   <TableHead>Ordered</TableHead>
                   <TableHead>Received</TableHead>
                     <TableHead>Remaining</TableHead>
@@ -321,13 +313,20 @@ export default function OrdersPlaced() {
                       {order.party_name}
                     </TableCell>
                     <TableCell>{order.item_name}</TableCell>
+                      <TableCell>
+                        {order.created_at
+                          ? new Date(order.created_at).toLocaleDateString()
+                          : "—"}
+                      </TableCell>
                     <TableCell>{order.ordered_quantity}</TableCell>
                     <TableCell>
                       {order.received_quantity ?? "—"}
                     </TableCell>
                       <TableCell>
                         {order.remaining_quantity ??
-                          (order.received_quantity ?? order.ordered_quantity ?? "—")}
+                          order.received_quantity ??
+                          order.ordered_quantity ??
+                          "—"}
                       </TableCell>
                       <TableCell>{order.status ?? "confirmed"}</TableCell>
                     <TableCell>{order.unit}</TableCell>

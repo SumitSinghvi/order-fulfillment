@@ -117,162 +117,155 @@ export default function OrdersReceived() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle>Orders Received</CardTitle>
-              <CardDescription>Add new orders as they arrive.</CardDescription>
-            </div>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button>Add order</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add order received</DialogTitle>
-                  <DialogDescription>
-                    Capture what the customer ordered.
-                  </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                  <form
-                    className="grid gap-4 md:grid-cols-2"
-                    onSubmit={onSubmit}
-                  >
-                    <FormField
-                      name="customer_name"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Customer</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Customer name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="item_name"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Item</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Item name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="sku"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>SKU</FormLabel>
-                          <FormControl>
-                            <Input placeholder="SKU (optional)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="ordered_quantity"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Quantity</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="unit"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Unit</FormLabel>
-                          <FormControl>
-                            <Input placeholder="mtrs" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="rate"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Rate</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      name="notes"
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem className="md:col-span-2">
-                          <FormLabel>Notes</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              rows={3}
-                              placeholder="Any notes about the order"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <DialogFooter className="md:col-span-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => setOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={createMutation.isPending}>
-                        {createMutation.isPending ? "Saving..." : "Save"}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Use the “Add order” button to create a new customer order.
-        </CardContent>
-      </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Orders List</CardTitle>
-          <CardDescription>Data from Supabase `orders_received`.</CardDescription>
-        </CardHeader>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle>Orders Received</CardTitle>
+                <CardDescription>
+                  Data from Supabase `orders_received`.
+                </CardDescription>
+              </div>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <Button>Add order</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add order received</DialogTitle>
+                    <DialogDescription>
+                      Capture what the customer ordered.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...form}>
+                    <form
+                      className="grid gap-4 md:grid-cols-2"
+                      onSubmit={onSubmit}
+                    >
+                      <FormField
+                        name="customer_name"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Customer</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Customer name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="item_name"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Item</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Item name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="sku"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>SKU</FormLabel>
+                            <FormControl>
+                              <Input placeholder="SKU (optional)" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="ordered_quantity"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantity</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="unit"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Unit</FormLabel>
+                            <FormControl>
+                              <Input placeholder="mtrs" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="rate"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Rate</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name="notes"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2">
+                            <FormLabel>Notes</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                rows={3}
+                                placeholder="Any notes about the order"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <DialogFooter className="md:col-span-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => setOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={createMutation.isPending}>
+                          {createMutation.isPending ? "Saving..." : "Save"}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
         <CardContent>
           {isLoading ? (
             <p>Loading orders...</p>
@@ -287,6 +280,7 @@ export default function OrdersReceived() {
                   <TableHead>Ordered</TableHead>
                   <TableHead>Dispatched</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead>Qty</TableHead>
                   <TableHead>Unit</TableHead>
                   <TableHead>Rate</TableHead>
@@ -309,6 +303,11 @@ export default function OrdersReceived() {
                       <TableCell>{order.ordered_quantity}</TableCell>
                       <TableCell>{order.dispatched_quantity ?? "—"}</TableCell>
                       <TableCell>{order.status ?? "confirmed"}</TableCell>
+                    <TableCell>
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleDateString()
+                        : "—"}
+                    </TableCell>
                     <TableCell>{order.ordered_quantity}</TableCell>
                     <TableCell>{order.unit}</TableCell>
                     <TableCell>{order.rate ?? "-"}</TableCell>
