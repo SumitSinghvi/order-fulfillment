@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,7 @@ export default function OrdersPlaced() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
+  const [noteView, setNoteView] = useState({ open: false, content: "" });
 
   const form = useForm({
     resolver: zodResolver(orderPlacedSchema),
@@ -107,7 +109,10 @@ export default function OrdersPlaced() {
   const onUpdateReceived = updateForm.handleSubmit((values) => {
     if (!editingOrder?.id) return;
     updateMutation.mutate(
-      { id: editingOrder.id, updates: { received_quantity: values.received_quantity } },
+      {
+        id: editingOrder.id,
+        updates: { received_quantity: values.received_quantity },
+      },
       {
         onSuccess: () => {
           setDialogOpen(false);
@@ -119,13 +124,14 @@ export default function OrdersPlaced() {
 
   return (
     <div className="space-y-6">
-
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
               <CardTitle>Orders Placed</CardTitle>
-              <CardDescription>Supplier orders you have placed.</CardDescription>
+              <CardDescription className="hidden md:block">
+                Supplier orders you have placed.
+              </CardDescription>
             </div>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
@@ -148,7 +154,7 @@ export default function OrdersPlaced() {
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Party</FormLabel>
+                          <FormLabel>Supplier</FormLabel>
                           <FormControl>
                             <Input placeholder="Party name" {...field} />
                           </FormControl>
@@ -189,7 +195,12 @@ export default function OrdersPlaced() {
                         <FormItem>
                           <FormLabel>Ordered Qty</FormLabel>
                           <FormControl>
-                            <Input type="number" min="0" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -234,7 +245,12 @@ export default function OrdersPlaced() {
                         <FormItem>
                           <FormLabel>Rate</FormLabel>
                           <FormControl>
-                            <Input type="number" min="0" step="0.01" {...field} />
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -284,13 +300,14 @@ export default function OrdersPlaced() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Party</TableHead>
+                  <TableHead>Order #</TableHead>
+                  <TableHead>Supplier</TableHead>
                   <TableHead>Item</TableHead>
-                    <TableHead>Date</TableHead>
+                  <TableHead>Date</TableHead>
                   <TableHead>Ordered</TableHead>
                   <TableHead>Received</TableHead>
-                    <TableHead>Remaining</TableHead>
-                    <TableHead>Status</TableHead>
+                  <TableHead>Remaining</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Unit</TableHead>
                   <TableHead>Rate</TableHead>
                   <TableHead>Notes</TableHead>
@@ -299,63 +316,84 @@ export default function OrdersPlaced() {
               </TableHeader>
               <TableBody>
                 {data.map((order) => (
-                    <TableRow
-                      key={order.id ?? order.order_number}
-                      className={
-                        order.status === "fulfilled"
-                          ? "bg-emerald-50"
-                          : (order.remaining_quantity ?? 0) < 0
-                          ? "bg-rose-50"
-                          : "bg-white"
-                      }
-                    >
+                  <TableRow
+                    key={order.id ?? order.order_number}
+                    className={
+                      order.status === "fulfilled"
+                        ? "bg-emerald-50"
+                        : (order.remaining_quantity ?? 0) < 0
+                        ? "bg-rose-50"
+                        : "bg-white"
+                    }
+                  >
                     <TableCell className="font-medium">
-                      {order.party_name}
+                      {order.order_number ?? "—"}
                     </TableCell>
+                    <TableCell>{order.party_name}</TableCell>
                     <TableCell>{order.item_name}</TableCell>
-                      <TableCell>
-                        {order.created_at
-                          ? new Date(order.created_at).toLocaleDateString()
-                          : "—"}
-                      </TableCell>
-                    <TableCell>{order.ordered_quantity}</TableCell>
                     <TableCell>
-                      {order.received_quantity ?? "—"}
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleDateString()
+                        : "—"}
                     </TableCell>
-                      <TableCell>
-                        {order.remaining_quantity ??
-                          order.received_quantity ??
-                          order.ordered_quantity ??
-                          "—"}
-                      </TableCell>
-                      <TableCell>{order.status ?? "confirmed"}</TableCell>
+                    <TableCell>{order.ordered_quantity}</TableCell>
+                    <TableCell>{order.received_quantity ?? "—"}</TableCell>
+                    <TableCell>
+                      {order.remaining_quantity ??
+                        order.received_quantity ??
+                        order.ordered_quantity ??
+                        "—"}
+                    </TableCell>
+                    <TableCell>{order.status ?? "confirmed"}</TableCell>
                     <TableCell>{order.unit}</TableCell>
                     <TableCell>{order.rate ?? "-"}</TableCell>
-                    <TableCell className="max-w-[240px] truncate">
-                      {order.notes ?? "-"}
+                    <TableCell className="max-w-[200px]">
+                      {order.notes ? (
+                        <div className="flex items-start gap-2">
+                          <span className="inline-block line-clamp-1">
+                            {order.notes}
+                          </span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="shrink-0"
+                            onClick={() =>
+                              setNoteView({
+                                open: true,
+                                content: order.notes,
+                              })
+                            }
+                            aria-label="View notes"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
-                      <TableCell className="space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setEditingOrder(order);
-                            setDialogOpen(true);
-                          }}
-                        >
-                          Update received
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          disabled={deleteMutation.isPending}
-                          onClick={() =>
-                            deleteMutation.mutate(order.id ?? order.order_number)
-                          }
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
+                    <TableCell className="space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setEditingOrder(order);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        Update received
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        disabled={deleteMutation.isPending}
+                        onClick={() =>
+                          deleteMutation.mutate(order.id ?? order.order_number)
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -404,10 +442,7 @@ export default function OrdersPlaced() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={updateMutation.isPending}
-                >
+                <Button type="submit" disabled={updateMutation.isPending}>
                   {updateMutation.isPending ? "Saving..." : "Save"}
                 </Button>
               </DialogFooter>
@@ -415,7 +450,28 @@ export default function OrdersPlaced() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={noteView.open}
+        onOpenChange={(open) => setNoteView((prev) => ({ ...prev, open }))}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Notes</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm whitespace-pre-wrap wrap-break-word">
+            {noteView.content || "No notes"}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setNoteView({ open: false, content: "" })}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-

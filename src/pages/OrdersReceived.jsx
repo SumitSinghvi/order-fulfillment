@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { orderReceivedSchema, fulfillmentLinkSchema } from "@/schemas/orderSchemas";
+import {
+  orderReceivedSchema,
+  fulfillmentLinkSchema,
+} from "@/schemas/orderSchemas";
 import {
   useOrdersReceived,
   useCreateOrderReceived,
@@ -10,6 +13,7 @@ import {
   useOrdersPlaced,
 } from "@/hooks/useOrders";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -72,6 +76,7 @@ export default function OrdersReceived() {
   const [open, setOpen] = useState(false);
   const [allocateOpen, setAllocateOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [noteView, setNoteView] = useState({ open: false, content: "" });
 
   const form = useForm({
     resolver: zodResolver(orderReceivedSchema),
@@ -117,155 +122,154 @@ export default function OrdersReceived() {
 
   return (
     <div className="space-y-6">
-
       <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <CardTitle>Orders Received</CardTitle>
-                <CardDescription>
-                  Purchase orders you have received
-                </CardDescription>
-              </div>
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button>Add order</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add order received</DialogTitle>
-                    <DialogDescription>
-                      Capture what the customer ordered.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <Form {...form}>
-                    <form
-                      className="grid gap-4 md:grid-cols-2"
-                      onSubmit={onSubmit}
-                    >
-                      <FormField
-                        name="customer_name"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Customer</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Customer name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="item_name"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Item</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Item name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="sku"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>SKU</FormLabel>
-                            <FormControl>
-                              <Input placeholder="SKU (optional)" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="ordered_quantity"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Quantity</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="unit"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Unit</FormLabel>
-                            <FormControl>
-                              <Input placeholder="mtrs" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="rate"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Rate</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        name="notes"
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem className="md:col-span-2">
-                            <FormLabel>Notes</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                rows={3}
-                                placeholder="Any notes about the order"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <DialogFooter className="md:col-span-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={() => setOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button type="submit" disabled={createMutation.isPending}>
-                          {createMutation.isPending ? "Saving..." : "Save"}
-                        </Button>
-                      </DialogFooter>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
+        <CardHeader>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <CardTitle>Orders Received</CardTitle>
+              <CardDescription className="hidden md:block">
+                Purchase orders you have received
+              </CardDescription>
             </div>
-          </CardHeader>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button>Add order</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add order received</DialogTitle>
+                  <DialogDescription>
+                    Capture what the customer ordered.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form
+                    className="grid gap-4 md:grid-cols-2"
+                    onSubmit={onSubmit}
+                  >
+                    <FormField
+                      name="customer_name"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Customer</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Customer name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="item_name"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Item</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Item name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="sku"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SKU</FormLabel>
+                          <FormControl>
+                            <Input placeholder="SKU (optional)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="ordered_quantity"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantity</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="unit"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Unit</FormLabel>
+                          <FormControl>
+                            <Input placeholder="mtrs" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="rate"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Rate</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      name="notes"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>Notes</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              rows={3}
+                              placeholder="Any notes about the order"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <DialogFooter className="md:col-span-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={createMutation.isPending}>
+                        {createMutation.isPending ? "Saving..." : "Save"}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
         <CardContent>
           {isLoading ? (
             <p>Loading orders...</p>
@@ -275,14 +279,13 @@ export default function OrdersReceived() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Order #</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Item</TableHead>
                   <TableHead>Ordered</TableHead>
                   <TableHead>Dispatched</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Unit</TableHead>
                   <TableHead>Rate</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead>Action</TableHead>
@@ -293,26 +296,49 @@ export default function OrdersReceived() {
                   <TableRow
                     key={order.id ?? order.order_number}
                     className={
-                      order.status === "fulfilled" ? "bg-emerald-50" : "bg-white"
+                      order.status === "fulfilled"
+                        ? "bg-emerald-50"
+                        : "bg-white"
                     }
                   >
                     <TableCell className="font-medium">
-                      {order.customer_name}
+                      {order.order_number ?? "—"}
                     </TableCell>
+                    <TableCell>{order.customer_name}</TableCell>
                     <TableCell>{order.item_name}</TableCell>
-                      <TableCell>{order.ordered_quantity}</TableCell>
-                      <TableCell>{order.dispatched_quantity ?? "—"}</TableCell>
-                      <TableCell>{order.status ?? "confirmed"}</TableCell>
+                    <TableCell>{order.ordered_quantity}</TableCell>
+                    <TableCell>{order.dispatched_quantity ?? "—"}</TableCell>
+                    <TableCell>{order.status ?? "confirmed"}</TableCell>
                     <TableCell>
                       {order.created_at
                         ? new Date(order.created_at).toLocaleDateString()
                         : "—"}
                     </TableCell>
-                    <TableCell>{order.ordered_quantity}</TableCell>
-                    <TableCell>{order.unit}</TableCell>
                     <TableCell>{order.rate ?? "-"}</TableCell>
-                    <TableCell className="max-w-[240px] truncate">
-                      {order.notes ?? "-"}
+                    <TableCell className="max-w-[200px]">
+                      {order.notes ? (
+                        <div className="flex items-start gap-2">
+                          <span className="inline-block line-clamp-1">
+                            {order.notes}
+                          </span>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="shrink-0"
+                            onClick={() =>
+                              setNoteView({
+                                open: true,
+                                content: order.notes,
+                              })
+                            }
+                            aria-label="View notes"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                     <TableCell className="space-x-2">
                       <Button
@@ -362,9 +388,7 @@ export default function OrdersReceived() {
               <div>
                 Ordered: {selectedOrder.ordered_quantity} {selectedOrder.unit}
               </div>
-              <div>
-                Dispatched: {selectedOrder.dispatched_quantity ?? "—"}
-              </div>
+              <div>Dispatched: {selectedOrder.dispatched_quantity ?? "—"}</div>
             </div>
           ) : null}
           <Form {...allocateForm}>
@@ -418,10 +442,7 @@ export default function OrdersReceived() {
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={createLinkMutation.isPending}
-                >
+                <Button type="submit" disabled={createLinkMutation.isPending}>
                   {createLinkMutation.isPending ? "Allocating..." : "Allocate"}
                 </Button>
               </DialogFooter>
@@ -429,7 +450,28 @@ export default function OrdersReceived() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={noteView.open}
+        onOpenChange={(open) => setNoteView((prev) => ({ ...prev, open }))}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Notes</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm whitespace-pre-wrap wrap-break-word">
+            {noteView.content || "No notes"}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setNoteView({ open: false, content: "" })}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
