@@ -2,6 +2,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
+async function getUserOrThrow() {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error) throw error;
+  if (!user) throw new Error("Not authenticated");
+  return user;
+}
+
 // ============================================================================
 // ORDERS RECEIVED HOOKS
 // ============================================================================
@@ -10,9 +20,11 @@ export function useOrdersReceived() {
   return useQuery({
     queryKey: ["orders-received"],
     queryFn: async () => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_received")
         .select("*")
+        .eq("user_id", user.id)
         .order("order_number", { ascending: false });
 
       if (error) throw error;
@@ -27,9 +39,10 @@ export function useCreateOrderReceived() {
 
   return useMutation({
     mutationFn: async (orderData) => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_received")
-        .insert([orderData])
+        .insert([{ ...orderData, user_id: user.id }])
         .select()
         .single();
 
@@ -59,6 +72,7 @@ export function useUpdateOrderReceived() {
 
   return useMutation({
     mutationFn: async ({ id, updates }) => {
+      await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_received")
         .update(updates)
@@ -92,6 +106,7 @@ export function useDeleteOrderReceived() {
 
   return useMutation({
     mutationFn: async (id) => {
+      await getUserOrThrow();
       const { error } = await supabase
         .from("orders_received")
         .delete()
@@ -124,9 +139,11 @@ export function useOrdersPlaced() {
   return useQuery({
     queryKey: ["orders-placed"],
     queryFn: async () => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_placed")
         .select("*")
+        .eq("user_id", user.id)
         .order("order_number", { ascending: false });
 
       if (error) throw error;
@@ -141,9 +158,10 @@ export function useCreateOrderPlaced() {
 
   return useMutation({
     mutationFn: async (orderData) => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_placed")
-        .insert([orderData])
+        .insert([{ ...orderData, user_id: user.id }])
         .select()
         .single();
 
@@ -173,6 +191,7 @@ export function useUpdateOrderPlaced() {
 
   return useMutation({
     mutationFn: async ({ id, updates }) => {
+      await getUserOrThrow();
       const { data, error } = await supabase
         .from("orders_placed")
         .update(updates)
@@ -206,6 +225,7 @@ export function useDeleteOrderPlaced() {
 
   return useMutation({
     mutationFn: async (id) => {
+      await getUserOrThrow();
       const { error } = await supabase
         .from("orders_placed")
         .delete()
@@ -238,6 +258,7 @@ export function useFulfillmentLinks() {
   return useQuery({
     queryKey: ["fulfillment-links"],
     queryFn: async () => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("order_fulfillment_links")
         .select(
@@ -247,6 +268,7 @@ export function useFulfillmentLinks() {
           orders_placed:order_placed_id(*)
         `
         )
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -261,9 +283,10 @@ export function useCreateFulfillmentLink() {
 
   return useMutation({
     mutationFn: async (linkData) => {
+      const user = await getUserOrThrow();
       const { data, error } = await supabase
         .from("order_fulfillment_links")
-        .insert([linkData])
+        .insert([{ ...linkData, user_id: user.id }])
         .select()
         .single();
 
@@ -295,6 +318,7 @@ export function useDeleteFulfillmentLink() {
 
   return useMutation({
     mutationFn: async (id) => {
+      await getUserOrThrow();
       const { error } = await supabase
         .from("order_fulfillment_links")
         .delete()

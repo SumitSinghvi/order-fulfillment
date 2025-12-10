@@ -125,7 +125,7 @@ export default function OrdersPlaced() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <CardTitle>Orders Placed</CardTitle>
-              <CardDescription>Data from Supabase `orders_placed`.</CardDescription>
+              <CardDescription>Supplier orders you have placed.</CardDescription>
             </div>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
@@ -135,7 +135,7 @@ export default function OrdersPlaced() {
                 <DialogHeader>
                   <DialogTitle>Add supplier order</DialogTitle>
                   <DialogDescription>
-                    Log what you ordered from suppliers.
+                    Log what you ordered from suppliers
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>

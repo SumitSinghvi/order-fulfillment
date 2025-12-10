@@ -124,7 +124,7 @@ export default function OrdersReceived() {
               <div>
                 <CardTitle>Orders Received</CardTitle>
                 <CardDescription>
-                  Data from Supabase `orders_received`.
+                  Purchase orders you have received
                 </CardDescription>
               </div>
               <Dialog open={open} onOpenChange={setOpen}>
