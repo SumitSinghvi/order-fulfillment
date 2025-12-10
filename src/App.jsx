@@ -62,9 +62,7 @@ function App() {
               </Button>
             </div>
           ) : (
-            <Button size="sm" onClick={handleSignIn}>
-              Sign in with Google
-            </Button>
+            <p>Welcome to Order Management System</p>
           )}
         </div>
 
